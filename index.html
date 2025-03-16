@@ -4,15 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-eval';">
-    <title>SPOT THE SIGN</title>
+    <title>SPOT THE SIGN 👀</title>
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600&family=Fredoka+One&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
 </head>
 <body>
     <!-- Welcome Screen -->
     <section id="welcome-screen" class="screen">
-        <h1 class="game-title">Welcome to SPOT THE SIGN! 🕵️</h1>
+        <h1 class="game-title">Welcome to SPOT THE SIGN! 👀</h1>
         <div class="button-container">
             <button class="button" id="btn-name">
                 <span class="button-icon">✏️</span>
@@ -102,10 +101,12 @@
         </div>
     </div>
 
-    <!-- Sound Elements (Hidden) -->
-    <audio id="click-sound" src="./sounds/click.mp3"></audio>
-    <audio id="game-over-sound" src="./sounds/game-over.mp3"></audio>
+    <!-- Loading Spinner -->
+    <div id="loading-spinner" class="loading-spinner" style="display: none;">
+        <div class="spinner"></div>
+    </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
