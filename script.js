@@ -196,13 +196,16 @@ function renderSign() {
 function getSignColor() {
     const imageData = ctx.getImageData(signX, signY, 1, 1).data;
     const baseOpacity = getBaseOpacityForLevel(); // Get opacity based on level
+    if (level === "Easy") {
+        return "rgba(255, 0, 0, 1)"; // Super duper visible (bright red)
+    }
     return `rgba(${imageData[0]}, ${imageData[1]}, ${imageData[2]}, ${baseOpacity})`;
 }
 
 function getBaseOpacityForLevel() {
     switch (level) {
         case "Easy":
-            return 0.9; // Super visible
+            return 1; // Super duper visible
         case "Medium":
             return 0.6; // Slightly harder to see
         case "Hard":
@@ -210,7 +213,7 @@ function getBaseOpacityForLevel() {
         case "Extremely Hard":
             return 0.1; // Almost invisible
         default:
-            return 0.9;
+            return 1;
     }
 }
 
