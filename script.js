@@ -202,11 +202,11 @@ function getSignColor() {
 function getBaseOpacityForLevel() {
     switch (level) {
         case "Easy":
-            return 10; // Very visible
+            return 0.9; // Super visible
         case "Medium":
-            return 0.6; // Slightly blended
+            return 0.6; // Slightly harder to see
         case "Hard":
-            return 0.3; // Mostly blended
+            return 0.3; // Much harder to see
         case "Extremely Hard":
             return 0.1; // Almost invisible
         default:
