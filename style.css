@@ -380,29 +380,56 @@ body {
         opacity: 0;
     }
 }
+background-image: url('./images/paper-texture.jpg');
+font-family: 'Dancing Script', cursive;
+
 /* Signature Paper Animation */
 #signature-paper {
     position: absolute;
     bottom: -100px;
     right: -100px;
-    width: 150px;
-    height: 80px;
+    width: 200px;
+    height: 120px;
     background: white;
+    background-image: url('paper-texture.jpg'); /* Add a paper texture image */
+    background-size: cover;
     border: 1px solid #ccc;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     display: none;
-    padding: 10px;
-    font-family: 'Cursive', sans-serif;
-    font-size: 18px;
+    padding: 20px;
+    font-family: 'Dancing Script', cursive; /* Use a cursive font for the signature */
+    font-size: 24px;
     text-align: center;
-    z-index: 1001; /* Ensure it appears above other elements */
+    z-index: 1001;
+    overflow: hidden;
 }
 
 #signature-text {
     display: inline-block;
-    font-family: 'Cursive', sans-serif;
-    font-size: 18px;
     color: var(--black);
+    position: relative;
+}
+
+/* Pen Styling */
+#pen {
+    position: absolute;
+    font-size: 24px;
+    bottom: -10px; /* Adjust based on paper size */
+    left: 0;
+    transform: translateX(-100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+
+/* Writing Animation */
+@keyframes write {
+    from {
+        width: 0;
+    }
+    to {
+        width: 100%;
+    }
 }
 
 /* Slide-in Animation */
