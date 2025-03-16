@@ -46,7 +46,12 @@ let duplicateCount = 0; // Counter for duplicate images in Extremely Hard level
 const imagePaths = {
     Easy: ["./images/easy1.jpg", "./images/easy2.jpg", "./images/easy3.jpg", "./images/easy4.jpg", "./images/easy5.jpg"],
     Medium: ["./images/medium1.jpg", "./images/medium2.jpg", "./images/medium3.jpg", "./images/medium4.jpg", "./images/medium5.jpg", "./images/medium6.jpg"],
-    Hard: ["./images/hard1.jpg", "./images/hard2.jpg", "./images/hard3.jpg", "./images/hard4.jpg", "./images/hard5.jpg", "./images/hard.jpg"],
+    Hard: [
+        "./images/hard1.jpg", "./images/hard2.jpg", "./images/hard3.jpg", "./images/hard4.jpg",
+        "./images/hard5.jpg", "./images/hard6.jpg", "./images/hard7.jpg", "./images/hard8.jpg",
+        "./images/hard9.jpg", "./images/hard10.jpg", "./images/hard11.jpg", "./images/hard12.jpg",
+        "./images/hard13.jpg", "./images/hard14.jpg", "./images/hard15.jpg", "./images/hard16.jpg"
+    ],
     "Extremely Hard": ["./images/extremely-hard.jpg"],
 };
 
@@ -183,7 +188,7 @@ function renderSign() {
     ctx.translate(signX, signY);
     ctx.rotate((Math.random() - 0.5) * 0.5); // Random rotation
     ctx.font = `${signSize}px Arial`;
-    ctx.fillStyle = getSignColor(); // Dynamic color based on image
+    ctx.fillStyle = getSignColor(); // Dynamic color based on level
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText("SIGN", 0, 0);
@@ -191,9 +196,24 @@ function renderSign() {
 }
 
 function getSignColor() {
-    // Get the pixel color at the sign's position
     const imageData = ctx.getImageData(signX, signY, 1, 1).data;
-    return `rgba(${imageData[0]}, ${imageData[1]}, ${imageData[2]}, 0.7)`;
+    const baseOpacity = getBaseOpacityForLevel(); // Get opacity based on level
+    return `rgba(${imageData[0]}, ${imageData[1]}, ${imageData[2]}, ${baseOpacity})`;
+}
+
+function getBaseOpacityForLevel() {
+    switch (level) {
+        case "Easy":
+            return 0.9; // Very visible
+        case "Medium":
+            return 0.6; // Slightly blended
+        case "Hard":
+            return 0.3; // Mostly blended
+        case "Extremely Hard":
+            return 0.1; // Almost invisible
+        default:
+            return 0.9;
+    }
 }
 
 function advanceLevel() {
