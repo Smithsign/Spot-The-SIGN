@@ -36,9 +36,9 @@ let images = [];
 
 // Image Paths
 const imagePaths = {
-  Easy: ["./images/easy1.jpg", "./images/easy2.jpg", "./images/easy3.jpg"],
-  Medium: ["./images/medium1.jpg", "./images/medium2.jpg", "./images/medium3.jpg"],
-  Hard: ["./images/hard1.jpg", "./images/hard2.jpg", "./images/hard3.jpg"],
+  Easy: ["./images/easy1.jpg", "./images/easy2.jpg", "./images/easy3.jpg", "./images/easy4.jpg", "./images/easy5.jpg"],
+  Medium: ["./images/medium1.jpg", "./images/medium2.jpg", "./images/medium3.jpg", "./images/medium4.jpg", "./images/medium5.jpg", "./images/medium6.jpg"],
+  Hard: ["./images/hard1.jpg", "./images/hard2.jpg", "./images/hard3.jpg" "./images/hard4.jpg","./images/hard5.jpg","./images/hard6.jpg","./images/hard7.jpg","./images/hard8.jpg","./images/hard9.jpg","./images/hard10.jpg","./images/hard11.jpg","./images/hard12.jpg","./images/hard13.jpg","./images/hard14.jpg","./images/hard15.jpg","./images/hard16.jpg",],
   "Extremely Hard": ["./images/extremely-hard.jpg"],
 };
 
