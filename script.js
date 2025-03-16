@@ -37,6 +37,7 @@ let timerInterval;
 let signX, signY, signWidth, signHeight;
 let currentImageIndex = 0;
 let images = [];
+let isGameOver = false;
 
 // Image Paths
 const imagePaths = {
@@ -66,6 +67,14 @@ const TIMER_PER_LEVEL = {
 const clickSound = new Audio("./sounds/click.mp3");
 const gameOverSound = new Audio("./sounds/game-over.mp3");
 
+// Confetti Configuration
+const confettiSettings = { 
+    particleCount: 100, 
+    spread: 70, 
+    origin: { y: 0.6 }, 
+    colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff']
+};
+
 // Button Events
 buttons.name.addEventListener("click", () => showScreen("nameForm"));
 buttons.signee.addEventListener("click", () => showScreen("signeeOptions"));
@@ -88,12 +97,14 @@ function showScreen(screen) {
     if (screens[screen]) {
         Object.values(screens).forEach((s) => (s.style.display = "none"));
         screens[screen].style.display = "flex";
+        screens[screen].classList.add("fade-in");
     } else {
         console.error(`Screen "${screen}" is undefined. Check your HTML IDs.`);
     }
 }
 
 function startGame() {
+    isGameOver = false;
     showScreen("gameContainer");
     greeting.textContent = `Welcome, ${playerName}! Let's play!`;
     canvas.width = 800;
@@ -111,10 +122,19 @@ function startGame() {
 
 function updateScore() {
     scoreDisplay.textContent = score;
+    scoreDisplay.classList.add("pop");
+    setTimeout(() => scoreDisplay.classList.remove("pop"), 200);
 }
 
 function updateTimer() {
     timerDisplay.textContent = `Time: ${timeLeft}s`;
+    
+    // Add pulse animation when time is low
+    if (timeLeft <= 10 && timeLeft > 0) {
+        timerDisplay.classList.add("pulse");
+    } else {
+        timerDisplay.classList.remove("pulse");
+    }
 }
 
 function startTimer() {
@@ -123,7 +143,7 @@ function startTimer() {
         timerInterval = setInterval(() => {
             timeLeft--;
             updateTimer();
-            if (timeLeft <= 0) {
+            if (timeLeft <= 0 && !isGameOver) {
                 clearInterval(timerInterval);
                 gameOver();
             }
@@ -150,10 +170,10 @@ function renderSign() {
     signX = Math.random() * (canvas.width - 100);
     signY = Math.random() * (canvas.height - 50);
     ctx.font = "30px Arial";
-    ctx.fillStyle = "rgba(255, 0, 0, 0.3)"; // Semi-transparent red for camouflage
+    ctx.fillStyle = "rgba(255, 0, 0, 0.3)";
     ctx.fillText("SIGN", signX, signY);
     signWidth = ctx.measureText("SIGN").width;
-    signHeight = 30; // Fixed height for the text
+    signHeight = 30;
 }
 
 function advanceLevel() {
@@ -167,8 +187,7 @@ function advanceLevel() {
         case "Hard":
             level = "Extremely Hard";
             break;
-        case "Extremely Hard":
-            // No further levels
+        default:
             return;
     }
 
@@ -182,20 +201,40 @@ function advanceLevel() {
 function showLevelUpPopup(message) {
     levelUpPopup.textContent = message;
     levelUpPopup.style.display = "block";
+    levelUpPopup.classList.add("slide-in");
     setTimeout(() => {
+        levelUpPopup.classList.remove("slide-in");
         levelUpPopup.style.display = "none";
     }, 2000);
 }
 
 function gameOver() {
+    isGameOver = true;
     gameOverSound.play();
     finalScoreDisplay.textContent = score;
     gameOverPopup.style.display = "flex";
+    gameOverPopup.classList.add("fade-in");
+    
+    // Confetti effect
+    confetti({
+        ...confettiSettings,
+        angle: 60,
+        origin: { x: 0 }
+    });
+    confetti({
+        ...confettiSettings,
+        angle: 120,
+        origin: { x: 1 }
+    });
 }
 
 tryAgainButton.addEventListener("click", () => {
-    gameOverPopup.style.display = "none";
-    resetGame();
+    gameOverPopup.classList.add("fade-out");
+    setTimeout(() => {
+        gameOverPopup.style.display = "none";
+        gameOverPopup.classList.remove("fade-out");
+        resetGame();
+    }, 300);
 });
 
 shareButton.addEventListener("click", () => {
@@ -205,11 +244,14 @@ shareButton.addEventListener("click", () => {
 });
 
 canvas.addEventListener("click", (e) => {
+    if (isGameOver) return;
+
     const rect = canvas.getBoundingClientRect();
     const clickX = e.clientX - rect.left;
     const clickY = e.clientY - rect.top;
 
-    if (clickX > signX && clickX < signX + signWidth && clickY > signY - signHeight && clickY < signY) {
+    if (clickX > signX && clickX < signX + signWidth && 
+        clickY > signY - signHeight && clickY < signY) {
         clickSound.play();
         score += POINTS_PER_LEVEL[level];
         updateScore();
@@ -229,6 +271,7 @@ canvas.addEventListener("click", (e) => {
 function resetGame() {
     clearInterval(timerInterval);
     showScreen("welcome");
+    canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
 }
 
 // Initialize the game
