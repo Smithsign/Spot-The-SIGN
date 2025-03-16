@@ -200,7 +200,7 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(255, 107, 53, 0.9); /* Orange background */
     display: flex;
     justify-content: center;
     align-items: center;
@@ -208,11 +208,12 @@ body {
 }
 
 .popup-content {
-    background: white;
+    background: var(--primary-orange);
     padding: 2rem;
     border-radius: 10px;
     text-align: center;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    color: var(--white);
 }
 
 .popup-title {
@@ -228,7 +229,7 @@ body {
 .final-score {
     font-size: 2.5rem;
     font-weight: bold;
-    color: #ff5722;
+    color: var(--white);
     margin-bottom: 1.5rem;
 }
 
@@ -243,13 +244,14 @@ body {
     align-items: center;
     gap: 0.5rem;
 }
+
+/* Loading Spinner */
 .loading-spinner {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(255, 255, 255, 0.8);
     display: flex;
     justify-content: center;
     align-items: center;
@@ -257,8 +259,8 @@ body {
 }
 
 .spinner {
-    border: 8px solid #f3f3f3;
-    border-top: 8px solid #ff5722;
+    border: 8px solid rgba(255, 107, 53, 0.3); /* Light orange */
+    border-top: 8px solid var(--primary-orange); /* Dark orange */
     border-radius: 50%;
     width: 60px;
     height: 60px;
@@ -270,7 +272,7 @@ body {
     100% { transform: rotate(360deg); }
 }
 
-/* Add to style.css */
+/* Animations */
 .fade-in {
     animation: fadeIn 0.3s ease-in;
 }
@@ -316,28 +318,4 @@ body {
     0% { transform: scale(1); }
     50% { transform: scale(1.1); }
     100% { transform: scale(1); }
-}
-
-/* Form styling */
-.form-card {
-    max-width: 400px;
-    width: 90%;
-    padding: 2rem;
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 15px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-}
-
-.input-field {
-    width: 100%;
-    padding: 12px;
-    font-size: 1.1rem;
-    border: 2px solid #ddd;
-    border-radius: 8px;
-    transition: border-color 0.3s ease;
-}
-
-.input-field:focus {
-    border-color: #007bff;
-    outline: none;
 }
