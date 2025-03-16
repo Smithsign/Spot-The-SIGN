@@ -27,6 +27,7 @@ const gameOverPopup = document.getElementById("game-over-popup");
 const finalScoreDisplay = document.getElementById("final-score");
 const tryAgainButton = document.getElementById("try-again");
 const shareButton = document.getElementById("share");
+const loadingSpinner = document.getElementById("loading-spinner");
 
 // Game Variables
 let playerName = "";
@@ -157,21 +158,27 @@ function loadNextImage() {
         resetGame();
         return;
     }
+    loadingSpinner.style.display = "flex";
     const img = new Image();
     img.src = images[currentImageIndex++];
     img.onload = () => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         renderSign();
+        loadingSpinner.style.display = "none";
     };
 }
 
 function renderSign() {
     signX = Math.random() * (canvas.width - 100);
     signY = Math.random() * (canvas.height - 50);
-    ctx.font = "30px Arial";
-    ctx.fillStyle = "rgba(255, 0, 0, 0.3)";
-    ctx.fillText("SIGN", signX, signY);
+    ctx.save();
+    ctx.translate(signX, signY);
+    ctx.rotate((Math.random() - 0.5) * 0.5); // Random rotation
+    ctx.font = `${Math.random() * 20 + 20}px Arial`; // Random font size
+    ctx.fillStyle = `rgba(255, 0, 0, ${Math.random() * 0.5 + 0.3})`; // Random opacity
+    ctx.fillText("SIGN", 0, 0);
+    ctx.restore();
     signWidth = ctx.measureText("SIGN").width;
     signHeight = 30;
 }
@@ -238,7 +245,7 @@ tryAgainButton.addEventListener("click", () => {
 });
 
 shareButton.addEventListener("click", () => {
-    const tweetText = `I scored ${score} points in the Sign Finder game! Can you beat me?`;
+    const tweetText = `I scored ${score} points in SPOT THE SIGN 👀! Can you beat me? Play now: ${window.location.href}`;
     const tweetUrl = `https://x.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
     window.open(tweetUrl, "_blank");
 });
