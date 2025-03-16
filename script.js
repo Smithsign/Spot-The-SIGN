@@ -28,52 +28,19 @@ const levelUpPopup = document.getElementById("level-up-popup");
 let playerName = "";
 let score = 0;
 let level = "Easy";
-let timeLeft = 0; // Initialize to 0
+let timeLeft = 0;
 let timerInterval;
 let signX, signY, signWidth, signHeight;
 let currentImageIndex = 0;
 let images = [];
-let clonedImages = []; // For extremely hard level
 
-// Image Paths
 // Image Paths
 const imagePaths = {
-    Easy: [
-        "./images/easy1.jpg",
-        "./images/easy2.jpg",
-        "./images/easy3.jpg",
-        "./images/easy4.jpg",
-        "./images/easy5.jpg",
-    ],
-    Medium: [
-        "./images/medium1.jpg",
-        "./images/medium2.jpg",
-        "./images/medium3.jpg",
-        "./images/medium4.jpg",
-        "./images/medium5.jpg",
-        "./images/medium6.jpg",
-    ],
-    Hard: [
-        "./images/hard1.jpg",
-        "./images/hard2.jpg",
-        "./images/hard3.jpg",
-        "./images/hard4.jpg",
-        "./images/hard5.jpg",
-        "./images/hard6.jpg",
-        "./images/hard7.jpg",
-        "./images/hard8.jpg",
-        "./images/hard9.jpg",
-        "./images/hard10.jpg",
-        "./images/hard11.jpg",
-        "./images/hard12.jpg",
-        "./images/hard13.jpg",
-        "./images/hard14.jpg",
-        "./images/hard15.jpg",
-        "./images/hard16.jpg",
-    ],
+    Easy: ["./images/easy1.jpg", "./images/easy2.jpg", "./images/easy3.jpg"],
+    Medium: ["./images/medium1.jpg", "./images/medium2.jpg", "./images/medium3.jpg"],
+    Hard: ["./images/hard1.jpg", "./images/hard2.jpg", "./images/hard3.jpg"],
     "Extremely Hard": ["./images/extremely-hard.jpg"],
 };
-
 
 // Points Configuration
 const POINTS_PER_LEVEL = {
@@ -85,7 +52,7 @@ const POINTS_PER_LEVEL = {
 
 // Timer Configuration
 const TIMER_PER_LEVEL = {
-    Easy: 0, // No timer
+    Easy: 0,
     Medium: 20,
     Hard: 15,
     "Extremely Hard": 10,
@@ -110,8 +77,12 @@ form.addEventListener("submit", (e) => {
 
 // Game Functions
 function showScreen(screen) {
-    Object.values(screens).forEach((s) => (s.style.display = "none"));
-    screens[screen].style.display = "flex";
+    if (screens[screen]) {
+        Object.values(screens).forEach((s) => (s.style.display = "none"));
+        screens[screen].style.display = "flex";
+    } else {
+        console.error(`Screen "${screen}" is undefined. Check your HTML IDs.`);
+    }
 }
 
 function startGame() {
@@ -130,6 +101,14 @@ function startGame() {
     startTimer();
 }
 
+function updateScore() {
+    scoreDisplay.textContent = score;
+}
+
+function updateTimer() {
+    timerDisplay.textContent = `Time: ${timeLeft}s`;
+}
+
 function startTimer() {
     clearInterval(timerInterval);
     if (timeLeft > 0) {
@@ -145,72 +124,26 @@ function startTimer() {
     }
 }
 
-function updateTimer() {
-    timerDisplay.textContent = `Time: ${timeLeft}s`;
-}
-
 function loadNextImage() {
-    if (level === "Extremely Hard") {
-        // Clone the image for extremely hard level
-        const img = new Image();
-        img.src = imagePaths["Extremely Hard"][0];
-        clonedImages.push(img);
-    } else {
-        // Load the next image for other levels
-        const img = new Image();
-        img.src = images[currentImageIndex];
-        currentImageIndex++;
+    if (currentImageIndex >= images.length) {
+        alert("No more images! You completed the level.");
+        resetGame();
+        return;
     }
-
+    const img = new Image();
+    img.src = images[currentImageIndex++];
     img.onload = () => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        if (level === "Extremely Hard") {
-            // Draw all cloned images
-            clonedImages.forEach((clone, index) => {
-                ctx.drawImage(clone, index * 50, index * 50, canvas.width, canvas.height);
-            });
-        } else {
-            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        }
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         renderSign();
-    };
-
-    img.onerror = () => {
-        console.error("Failed to load image. Check the file path and name.");
-        ctx.fillStyle = "white";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.fillStyle = "black";
-        ctx.font = "20px Arial";
-        ctx.fillText("Image not found! Check the file path.", 50, 50);
     };
 }
 
 function renderSign() {
-    // Adjust SIGN size and position based on level difficulty
-    let fontSize, textColor;
-    switch (level) {
-        case "Easy":
-            fontSize = 50;
-            textColor = "yellow";
-            break;
-        case "Medium":
-            fontSize = 40;
-            textColor = "orange";
-            break;
-        case "Hard":
-            fontSize = 30;
-            textColor = "red";
-            break;
-        case "Extremely Hard":
-            fontSize = 20;
-            textColor = "white";
-            break;
-    }
-
     signX = Math.random() * (canvas.width - 100);
     signY = Math.random() * (canvas.height - 50);
-    ctx.font = `${fontSize}px Arial`;
-    ctx.fillStyle = textColor;
+    ctx.font = "30px Arial";
+    ctx.fillStyle = "red";
     ctx.fillText("SIGN", signX, signY);
     signWidth = ctx.measureText("SIGN").width;
     signHeight = fontSize;
