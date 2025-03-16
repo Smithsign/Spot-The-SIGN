@@ -174,7 +174,7 @@ function loadNextImage() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         renderSign();
-        loadingSpinner.style.display = "none";
+        loadingSpinner.style.display = "none");
     };
 }
 
@@ -343,6 +343,7 @@ function gameOver() {
         origin: { x: 1 }
     });
 }
+
 tryAgainButton.addEventListener("click", () => {
     gameOverPopup.classList.add("fade-out");
     setTimeout(() => {
