@@ -27,306 +27,270 @@ const levelUpPopup = document.getElementById("level-up-popup");
 // Game Variables
 let playerName = "";
 let score = 0;
-let level = "Easy"; // Default level
-let timeLeft = 0;
+let level = "Easy";
+let timeLeft = 0; // Initialize to 0
 let timerInterval;
 let signX, signY, signWidth, signHeight;
 let currentImageIndex = 0;
 let images = [];
-let clonedImages = [];
+let clonedImages = []; // For extremely hard level
 
-// Image Configuration
-const IMAGE_CONFIG = {
-    Easy: {
-        count: 5,
-        path: i => `./easy${i + 1}.jpg`,
-        style: { size: 50, color: "yellow" },
-    },
-    Medium: {
-        count: 6,
-        path: i => `./medium${i + 1}.jpg`,
-        style: { size: 40, color: "orange" },
-    },
-    Hard: {
-        count: 16,
-        path: i => `./hard${i + 1}.jpg`,
-        style: { size: 30, color: "red" },
-    },
-    "Extremely Hard": {
-        count: 1,
-        path: () => `./extremely-hard.jpg`,
-        style: { size: 20, color: "white" },
-    },
+// Image Paths
+// Image Paths
+const imagePaths = {
+    Easy: [
+        "./images/easy1.jpg",
+        "./images/easy2.jpg",
+        "./images/easy3.jpg",
+        "./images/easy4.jpg",
+        "./images/easy5.jpg",
+    ],
+    Medium: [
+        "./images/medium1.jpg",
+        "./images/medium2.jpg",
+        "./images/medium3.jpg",
+        "./images/medium4.jpg",
+        "./images/medium5.jpg",
+        "./images/medium6.jpg",
+    ],
+    Hard: [
+        "./images/hard1.jpg",
+        "./images/hard2.jpg",
+        "./images/hard3.jpg",
+        "./images/hard4.jpg",
+        "./images/hard5.jpg",
+        "./images/hard6.jpg",
+        "./images/hard7.jpg",
+        "./images/hard8.jpg",
+        "./images/hard9.jpg",
+        "./images/hard10.jpg",
+        "./images/hard11.jpg",
+        "./images/hard12.jpg",
+        "./images/hard13.jpg",
+        "./images/hard14.jpg",
+        "./images/hard15.jpg",
+        "./images/hard16.jpg",
+    ],
+    "Extremely Hard": ["./images/extremely-hard.jpg"],
 };
 
-// Default Style Fallback
-const DEFAULT_STYLE = { size: 40, color: "black" };
 
-// Game Settings
-const POINTS_PER_LEVEL = { Easy: 1, Medium: 5, Hard: 15, "Extremely Hard": 20 };
-const TIMER_PER_LEVEL = { Easy: 0, Medium: 20, Hard: 15, "Extremely Hard": 10 };
+// Points Configuration
+const POINTS_PER_LEVEL = {
+    Easy: 1,
+    Medium: 5,
+    Hard: 15,
+    "Extremely Hard": 20,
+};
 
-// Image Cache
-const imageCache = new Map();
+// Timer Configuration
+const TIMER_PER_LEVEL = {
+    Easy: 0, // No timer
+    Medium: 20,
+    Hard: 15,
+    "Extremely Hard": 10,
+};
 
-// Event Listeners
+// Button Events
 buttons.name.addEventListener("click", () => showScreen("nameForm"));
 buttons.signee.addEventListener("click", () => showScreen("signeeOptions"));
 buttons.yes.addEventListener("click", () => showScreen("nameForm"));
 buttons.no.addEventListener("click", () => showScreen("introduceSign"));
 buttons.introName.addEventListener("click", () => showScreen("nameForm"));
-canvas.addEventListener("click", handleCanvasClick);
-form.addEventListener("submit", handleFormSubmit);
 
-// Core Game Functions
-async function handleFormSubmit(e) {
+form.addEventListener("submit", (e) => {
     e.preventDefault();
     playerName = nameInput.value.trim();
-    if (!playerName) return showError("Please enter your name!");
-
-    try {
-        await initializeGame();
-    } catch (error) {
-        showError(`Game initialization failed: ${error.message}`);
-        resetGame();
+    if (playerName) {
+        startGame();
+    } else {
+        alert("Please enter your name!");
     }
+});
+
+// Game Functions
+function showScreen(screen) {
+    Object.values(screens).forEach((s) => (s.style.display = "none"));
+    screens[screen].style.display = "flex";
 }
 
-async function initializeGame() {
-    showScreen("game-container");
-    greeting.textContent = `Welcome ${playerName}! Loading...`;
-
-    await preloadAllImages();
-    setupGameCanvas();
-    initializeGameState();
-
-    greeting.textContent = `Go ${playerName}! Spot the SIGN!`;
+function startGame() {
+    showScreen("gameContainer");
+    greeting.textContent = `Welcome, ${playerName}! Let's play!`;
+    canvas.width = 800;
+    canvas.height = 600;
+    score = 0;
+    level = "Easy";
+    timeLeft = TIMER_PER_LEVEL[level];
+    images = imagePaths[level];
+    currentImageIndex = 0;
+    updateScore();
+    updateTimer();
     loadNextImage();
     startTimer();
 }
 
-async function preloadAllImages() {
-    const loadPromises = [];
-
-    for (const [levelName, config] of Object.entries(IMAGE_CONFIG)) {
-        for (let i = 0; i < config.count; i++) {
-            const src = config.path(i);
-            if (imageCache.has(src)) continue;
-
-            loadPromises.push(new Promise((resolve, reject) => {
-                const img = new Image();
-                img.onload = () => {
-                    console.log(`Loaded: ${src}`);
-                    imageCache.set(src, img);
-                    resolve();
-                };
-                img.onerror = () => {
-                    console.error(`Failed to load: ${src}`);
-                    reject(new Error(`Missing image: ${src}`));
-                };
-                img.src = src;
-            }));
-        }
-    }
-
-    await Promise.all(loadPromises);
-}
-
-function setupGameCanvas() {
-    canvas.width = 800;
-    canvas.height = 600;
-    ctx.imageSmoothingEnabled = true;
-}
-
-function initializeGameState() {
-    score = 0;
-    level = "Easy";
-    if (!IMAGE_CONFIG[level]) {
-        throw new Error(`Invalid level: ${level}`);
-    }
-    timeLeft = TIMER_PER_LEVEL[level];
-    images = Array.from({ length: IMAGE_CONFIG[level].count }, (_, i) =>
-        IMAGE_CONFIG[level].path(i)
-    );
-    currentImageIndex = 0;
-    clonedImages = [];
-    updateScore();
-    updateTimer();
-}
-
-async function loadNextImage() {
-    try {
-        let img;
-        let src;
-
-        if (level === "Extremely Hard") {
-            src = IMAGE_CONFIG["Extremely Hard"].path(0);
-            img = imageCache.get(src);
-            if (!img) throw new Error(`Missing base image: ${src}`);
-            clonedImages.push(img);
-        } else {
-            if (currentImageIndex >= images.length) {
-                return advanceLevel();
+function startTimer() {
+    clearInterval(timerInterval);
+    if (timeLeft > 0) {
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            updateTimer();
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                alert(`Time's up! Final Score: ${score}`);
+                resetGame();
             }
-            src = images[currentImageIndex];
-            img = imageCache.get(src);
-            if (!img) throw new Error(`Image not loaded: ${src}`);
-            currentImageIndex++;
-        }
-
-        drawImage(img);
-    } catch (error) {
-        showCanvasError(error.message);
+        }, 1000);
     }
 }
 
-function drawImage(img) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+function updateTimer() {
+    timerDisplay.textContent = `Time: ${timeLeft}s`;
+}
 
+function loadNextImage() {
     if (level === "Extremely Hard") {
-        clonedImages.forEach(clone => {
-            ctx.drawImage(
-                clone,
-                Math.random() * (canvas.width - 100),
-                Math.random() * (canvas.height - 50),
-                100,
-                75
-            );
-        });
+        // Clone the image for extremely hard level
+        const img = new Image();
+        img.src = imagePaths["Extremely Hard"][0];
+        clonedImages.push(img);
     } else {
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        // Load the next image for other levels
+        const img = new Image();
+        img.src = images[currentImageIndex];
+        currentImageIndex++;
     }
 
-    renderSign();
+    img.onload = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        if (level === "Extremely Hard") {
+            // Draw all cloned images
+            clonedImages.forEach((clone, index) => {
+                ctx.drawImage(clone, index * 50, index * 50, canvas.width, canvas.height);
+            });
+        } else {
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        }
+        renderSign();
+    };
+
+    img.onerror = () => {
+        console.error("Failed to load image. Check the file path and name.");
+        ctx.fillStyle = "white";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "black";
+        ctx.font = "20px Arial";
+        ctx.fillText("Image not found! Check the file path.", 50, 50);
+    };
 }
 
 function renderSign() {
-    const config = IMAGE_CONFIG[level];
-    if (!config || !config.style) {
-        console.error(`Style configuration missing for level: ${level}`);
+    // Adjust SIGN size and position based on level difficulty
+    let fontSize, textColor;
+    switch (level) {
+        case "Easy":
+            fontSize = 50;
+            textColor = "yellow";
+            break;
+        case "Medium":
+            fontSize = 40;
+            textColor = "orange";
+            break;
+        case "Hard":
+            fontSize = 30;
+            textColor = "red";
+            break;
+        case "Extremely Hard":
+            fontSize = 20;
+            textColor = "white";
+            break;
     }
-
-    const { size, color } = config?.style || DEFAULT_STYLE;
-
-    ctx.font = `${size}px Arial`;
-    ctx.fillStyle = color;
 
     signX = Math.random() * (canvas.width - 100);
-    signY = 50 + Math.random() * (canvas.height - 50);
+    signY = Math.random() * (canvas.height - 50);
+    ctx.font = `${fontSize}px Arial`;
+    ctx.fillStyle = textColor;
     ctx.fillText("SIGN", signX, signY);
-
-    const metrics = ctx.measureText("SIGN");
-    signWidth = metrics.width;
-    signHeight = size;
+    signWidth = ctx.measureText("SIGN").width;
+    signHeight = fontSize;
 }
-
-// Remaining functions unchanged
-
 
 function advanceLevel() {
-    const levels = ["Easy", "Medium", "Hard", "Extremely Hard"];
-    const nextIndex = levels.indexOf(level) + 1;
-
-    if (nextIndex >= levels.length) {
-        endGame("Congratulations! You've completed all levels!");
-        return;
+    switch (level) {
+        case "Easy":
+            level = "Medium";
+            break;
+        case "Medium":
+            level = "Hard";
+            break;
+        case "Hard":
+            level = "Extremely Hard";
+            break;
+        case "Extremely Hard":
+            // No further levels
+            return;
     }
 
-    level = levels[nextIndex];
+    images = imagePaths[level];
     currentImageIndex = 0;
-    images = Array.from({ length: IMAGE_CONFIG[level].count }, (_, i) =>
-        IMAGE_CONFIG[level].path(i)
-    );
     timeLeft = TIMER_PER_LEVEL[level];
-
     showLevelUpPopup(`LEVEL UP: ${level} MODE!`);
     startTimer();
-    loadNextImage();
 }
 
-function handleCanvasClick(e) {
-    const rect = canvas.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+function showLevelUpPopup(message) {
+    levelUpPopup.textContent = message;
+    levelUpPopup.style.display = "block";
+    setTimeout(() => {
+        levelUpPopup.style.display = "none";
+    }, 2000);
+}
 
-    if (x >= signX && x <= signX + signWidth && y >= signY - signHeight && y <= signY) {
+canvas.addEventListener("click", (e) => {
+    const rect = canvas.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const clickY = e.clientY - rect.top;
+
+    if (clickX > signX && clickX < signX + signWidth && clickY > signY - signHeight && clickY < signY) {
+        // Add points based on level
         score += POINTS_PER_LEVEL[level];
         updateScore();
 
-        if (level === "Extremely Hard") clonedImages = [];
-        if (level !== "Extremely Hard") timeLeft = TIMER_PER_LEVEL[level];
+        // Handle level progression
+        if (level !== "Extremely Hard" && currentImageIndex >= images.length) {
+            advanceLevel();
+        }
 
+        // Reset timer for timed levels
+        if (level !== "Easy") {
+            timeLeft = TIMER_PER_LEVEL[level];
+        }
+
+        // Load next image
         loadNextImage();
     }
-}
+});
 
-// UI Functions
-function showScreen(screen) {
-    Object.values(screens).forEach(s => (s.style.display = "none"));
-    screens[screen].style.display = "flex";
+function triggerDestructionMode() {
+    // Add emojis or effects for destruction mode
+    const emojis = ["💥", "🔥", "💣", "🌋", "⚡"];
+    for (let i = 0; i < 10; i++) {
+        const x = Math.random() * canvas.width;
+        const y = Math.random() * canvas.height;
+        ctx.font = "40px Arial";
+        ctx.fillText(emojis[Math.floor(Math.random() * emojis.length)], x, y);
+    }
 }
 
 function updateScore() {
     scoreDisplay.textContent = score;
 }
 
-function updateTimer() {
-    timerDisplay.textContent = timeLeft > 0 ? `Time: ${timeLeft}s` : "Unlimited Time";
-}
-
-function startTimer() {
-    clearInterval(timerInterval);
-    if (timeLeft <= 0) return;
-
-    timerInterval = setInterval(() => {
-        timeLeft--;
-        updateTimer();
-        if (timeLeft <= 0) endGame("Time's up!");
-    }, 1000);
-}
-
-
-function showLevelUpPopup(message) {
-    levelUpPopup.textContent = message;
-    levelUpPopup.style.display = "block";
-    setTimeout(() => levelUpPopup.style.display = "none", 2000);
-}
-
-function showCanvasError(message) {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "white";
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = "red";
-    ctx.font = "18px Arial";
-    ctx.fillText("ERROR:", 20, 40);
-    ctx.fillText(message, 40, 70);
-    ctx.fillText("Check:", 20, 100);
-    ctx.fillText("1. Browser console (F12)", 40, 130);
-    ctx.fillText("2. Image files/folders exist", 40, 160);
-    ctx.fillText("3. Disable browser extensions", 40, 190);
-}
-
-function showError(message) {
-    alert(message);
-}
-
-function endGame(message) {
-    alert(`${message}\nFinal Score: ${score}`);
-    resetGame();
-}
-
 function resetGame() {
     clearInterval(timerInterval);
     showScreen("welcome");
-    initializeGameState();
 }
 
-// Initialization
-(async () => {
-    try {
-        await preloadAllImages();
-    } catch (error) {
-        showCanvasError(error.message);
-        console.error("Preloading failed:", error);
-    }
-})();
+// Initialize the game
+console.log("Game initialized. Check for errors in the console.");
