@@ -322,3 +322,33 @@ body {
     50% { transform: scale(1.1); }
     100% { transform: scale(1); }
 }
+/* Add to style.css */
+.signature-paper {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    width: 150px;
+    height: 80px;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 10px;
+}
+
+.signature {
+    font-family: 'Fredoka One', cursive;
+    font-size: 1.2rem;
+    color: var(--primary-orange);
+    white-space: nowrap;
+    overflow: hidden;
+    border-right: 2px solid var(--primary-orange);
+    animation: blink-caret 0.75s step-end infinite;
+}
+
+@keyframes blink-caret {
+    from, to { border-color: transparent; }
+    50% { border-color: var(--primary-orange); }
+}
