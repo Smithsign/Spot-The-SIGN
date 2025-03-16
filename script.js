@@ -174,7 +174,7 @@ function loadNextImage() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         renderSign();
-        loadingSpinner.style.display = "none");
+        loadingSpinner.style.display = "none";
     };
 }
 
@@ -399,4 +399,6 @@ function resetGame() {
 }
 
 // Initialize the game
-console.log("Game initialized. Check for errors in the console.");
+document.addEventListener("DOMContentLoaded", () => {
+    console.log("Game initialized. Check for errors in the console.");
+});
