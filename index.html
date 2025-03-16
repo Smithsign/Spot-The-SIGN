@@ -82,6 +82,29 @@
     <!-- Level-Up Popup -->
     <div id="level-up-popup" style="display: none;"></div>
 
+    <!-- Game Over Popup -->
+    <div id="game-over-popup" class="popup" style="display: none;">
+        <div class="popup-content">
+            <h2 class="popup-title">Game Over! 🎮</h2>
+            <p class="popup-text">Your final score is:</p>
+            <p id="final-score" class="final-score">0</p>
+            <div class="popup-buttons">
+                <button id="try-again" class="button popup-button">
+                    <span class="button-icon">🔄</span>
+                    Try Again
+                </button>
+                <button id="share" class="button popup-button">
+                    <span class="button-icon">🐦</span>
+                    Share on X.com
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sound Elements (Hidden) -->
+    <audio id="click-sound" src="./sounds/click.mp3"></audio>
+    <audio id="game-over-sound" src="./sounds/game-over.mp3"></audio>
+
     <script src="script.js"></script>
 </body>
 </html>
