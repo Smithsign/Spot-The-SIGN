@@ -39,6 +39,8 @@ let signX, signY, signWidth, signHeight;
 let currentImageIndex = 0;
 let images = [];
 let isGameOver = false;
+let signSize = 30; // Initial font size for the sign text
+let duplicateCount = 0; // Counter for duplicate images in Extremely Hard level
 
 // Image Paths
 const imagePaths = {
@@ -115,6 +117,8 @@ function startGame() {
     timeLeft = TIMER_PER_LEVEL[level];
     images = imagePaths[level];
     currentImageIndex = 0;
+    signSize = 30; // Reset sign size
+    duplicateCount = 0; // Reset duplicate count
     updateScore();
     updateTimer();
     loadNextImage();
@@ -178,12 +182,18 @@ function renderSign() {
     ctx.save();
     ctx.translate(signX, signY);
     ctx.rotate((Math.random() - 0.5) * 0.5); // Random rotation
-    ctx.font = "30px Arial";
-    ctx.fillStyle = `rgba(255, 0, 0, ${Math.random() * 0.5 + 0.3})`; // Random opacity
+    ctx.font = `${signSize}px Arial`;
+    ctx.fillStyle = getSignColor(); // Dynamic color based on image
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText("SIGN", 0, 0);
     ctx.restore();
+}
+
+function getSignColor() {
+    // Get the pixel color at the sign's position
+    const imageData = ctx.getImageData(signX, signY, 1, 1).data;
+    return `rgba(${imageData[0]}, ${imageData[1]}, ${imageData[2]}, 0.7)`;
 }
 
 function advanceLevel() {
@@ -267,7 +277,14 @@ canvas.addEventListener("click", (e) => {
         score += POINTS_PER_LEVEL[level];
         updateScore();
 
-        if (level !== "Extremely Hard" && currentImageIndex >= images.length) {
+        if (level === "Extremely Hard") {
+            // Duplicate the image and decrease sign size
+            duplicateCount++;
+            signSize = Math.max(10, signSize - 5); // Decrease size by 5px each time
+            if (duplicateCount % 2 === 0) {
+                loadNextImage(); // Load a new image every 2 clicks
+            }
+        } else if (level !== "Extremely Hard" && currentImageIndex >= images.length) {
             advanceLevel();
         }
 
