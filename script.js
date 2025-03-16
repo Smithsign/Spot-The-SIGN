@@ -140,44 +140,36 @@ function loadNextImage() {
 }
 
 function renderSign() {
-    signX = Math.random() * (canvas.width - 100);
-    signY = Math.random() * (canvas.height - 50);
-    ctx.font = "30px Arial";
-    ctx.fillStyle = "red";
-    ctx.fillText("SIGN", signX, signY);
-    signWidth = ctx.measureText("SIGN").width;
-    signHeight = fontSize;
-}
-
-function advanceLevel() {
+    // Define font size and styles based on the level
+    let fontSize;
     switch (level) {
         case "Easy":
-            level = "Medium";
+            fontSize = 50;
             break;
         case "Medium":
-            level = "Hard";
+            fontSize = 40;
             break;
         case "Hard":
-            level = "Extremely Hard";
+            fontSize = 30;
             break;
         case "Extremely Hard":
-            // No further levels
-            return;
+            fontSize = 20;
+            break;
+        default:
+            fontSize = 30;
     }
 
-    images = imagePaths[level];
-    currentImageIndex = 0;
-    timeLeft = TIMER_PER_LEVEL[level];
-    showLevelUpPopup(`LEVEL UP: ${level} MODE!`);
-    startTimer();
-}
+    ctx.font = `${fontSize}px Arial`;
+    ctx.fillStyle = "red";
 
-function showLevelUpPopup(message) {
-    levelUpPopup.textContent = message;
-    levelUpPopup.style.display = "block";
-    setTimeout(() => {
-        levelUpPopup.style.display = "none";
-    }, 2000);
+    // Randomize position of "SIGN" within canvas boundaries
+    signX = Math.random() * (canvas.width - fontSize * 2); // Leave some padding
+    signY = Math.random() * (canvas.height - fontSize);
+    ctx.fillText("SIGN", signX, signY);
+
+    // Set sign dimensions
+    signWidth = ctx.measureText("SIGN").width;
+    signHeight = fontSize; // Match the font size for height
 }
 
 canvas.addEventListener("click", (e) => {
@@ -185,7 +177,13 @@ canvas.addEventListener("click", (e) => {
     const clickX = e.clientX - rect.left;
     const clickY = e.clientY - rect.top;
 
-    if (clickX > signX && clickX < signX + signWidth && clickY > signY - signHeight && clickY < signY) {
+    // Adjust collision detection to ensure it matches the "SIGN" position
+    if (
+        clickX >= signX &&
+        clickX <= signX + signWidth &&
+        clickY >= signY &&
+        clickY <= signY + signHeight
+    ) {
         // Add points based on level
         score += POINTS_PER_LEVEL[level];
         updateScore();
@@ -204,6 +202,7 @@ canvas.addEventListener("click", (e) => {
         loadNextImage();
     }
 });
+
 
 function triggerDestructionMode() {
     // Add emojis or effects for destruction mode
