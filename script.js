@@ -84,20 +84,76 @@ const confettiSettings = {
     colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff']
 };
 
-// Button Events
-buttons.signee.addEventListener("click", () => showScreen("nameForm"));
-buttons.yes.addEventListener("click", () => showScreen("nameForm"));
-buttons.no.addEventListener("click", () => showScreen("introduceSign"));
-buttons.introName.addEventListener("click", () => showScreen("nameForm"));
+// Initialize the game
+document.addEventListener("DOMContentLoaded", () => {
+    console.log("Game initialized. Check for errors in the console.");
 
-form.addEventListener("submit", (e) => {
-    e.preventDefault();
-    playerName = nameInput.value.trim();
-    if (playerName) {
-        startGame();
-    } else {
-        alert("Please enter your name!");
-    }
+    // Ensure only the welcome screen is visible at the start
+    showScreen("welcome");
+
+    // Button Events
+    buttons.signee.addEventListener("click", () => showScreen("nameForm"));
+    buttons.yes.addEventListener("click", () => showScreen("nameForm"));
+    buttons.no.addEventListener("click", () => showScreen("introduceSign"));
+    buttons.introName.addEventListener("click", () => showScreen("nameForm"));
+
+    form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        playerName = nameInput.value.trim();
+        if (playerName) {
+            startGame();
+        } else {
+            alert("Please enter your name!");
+        }
+    });
+
+    tryAgainButton.addEventListener("click", () => {
+        gameOverPopup.classList.add("fade-out");
+        setTimeout(() => {
+            gameOverPopup.style.display = "none";
+            gameOverPopup.classList.remove("fade-out");
+            startGame(); // Restart the game directly
+        }, 300);
+    });
+
+    shareButton.addEventListener("click", () => {
+        const tweetText = `I scored ${score} points in SPOT THE SIGN 👀! Can you beat me? Play now: ${window.location.href}`;
+        const tweetUrl = `https://x.com/intent/tweet?text=${encodeURIComponent(tweetText)}`;
+        window.open(tweetUrl, "_blank");
+    });
+
+    canvas.addEventListener("click", (e) => {
+        if (isGameOver) return;
+
+        const rect = canvas.getBoundingClientRect();
+        const clickX = e.clientX - rect.left;
+        const clickY = e.clientY - rect.top;
+
+        // Check if click is within the sign's bounding box
+        if (clickX >= signX - signWidth / 2 && clickX <= signX + signWidth / 2 &&
+            clickY >= signY - signHeight / 2 && clickY <= signY + signHeight / 2) {
+            clickSound.play();
+            score += POINTS_PER_LEVEL[level];
+            updateScore();
+
+            if (level === "Extremely Hard") {
+                // Duplicate the image and decrease sign size
+                duplicateCount++;
+                signSize = Math.max(10, signSize - 5); // Decrease size by 5px each time
+                if (duplicateCount % 2 === 0) {
+                    loadNextImage(); // Load a new image every 2 clicks
+                }
+            } else if (level !== "Extremely Hard" && currentImageIndex >= images.length) {
+                advanceLevel();
+            }
+
+            if (level !== "Easy") {
+                timeLeft = TIMER_PER_LEVEL[level];
+            }
+
+            loadNextImage();
+        }
+    });
 });
 
 // Game Functions
