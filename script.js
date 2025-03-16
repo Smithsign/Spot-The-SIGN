@@ -299,7 +299,29 @@ function gameOver() {
     finalScoreDisplay.textContent = score;
     gameOverPopup.style.display = "flex";
     gameOverPopup.classList.add("fade-in");
-    
+
+    // Add a small white paper in the bottom-right corner
+    const paper = document.createElement("div");
+    paper.className = "signature-paper";
+    gameOverPopup.appendChild(paper);
+
+    // Animate the signature "SMITH.SIGN"
+    const signature = document.createElement("div");
+    signature.className = "signature";
+    paper.appendChild(signature);
+
+    const text = "SMITH.SIGN";
+    let index = 0;
+    const writeSignature = () => {
+        if (index < text.length) {
+            signature.textContent += text[index];
+            index++;
+            setTimeout(writeSignature, 200); // Adjust speed of writing
+        }
+    };
+
+    writeSignature();
+
     // Confetti effect
     confetti({
         ...confettiSettings,
