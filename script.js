@@ -8,7 +8,6 @@ const screens = {
 };
 
 const buttons = {
-    name: document.getElementById("btn-name"),
     signee: document.getElementById("btn-signee"),
     yes: document.getElementById("btn-yes"),
     no: document.getElementById("btn-no"),
@@ -84,8 +83,7 @@ const confettiSettings = {
 };
 
 // Button Events
-buttons.name.addEventListener("click", () => showScreen("nameForm"));
-buttons.signee.addEventListener("click", () => showScreen("signeeOptions"));
+buttons.signee.addEventListener("click", () => showScreen("nameForm"));
 buttons.yes.addEventListener("click", () => showScreen("nameForm"));
 buttons.no.addEventListener("click", () => showScreen("introduceSign"));
 buttons.introName.addEventListener("click", () => showScreen("nameForm"));
@@ -273,7 +271,7 @@ tryAgainButton.addEventListener("click", () => {
     setTimeout(() => {
         gameOverPopup.style.display = "none";
         gameOverPopup.classList.remove("fade-out");
-        resetGame();
+        startGame(); // Restart the game directly
     }, 300);
 });
 
