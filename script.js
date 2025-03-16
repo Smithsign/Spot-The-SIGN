@@ -27,6 +27,8 @@ const finalScoreDisplay = document.getElementById("final-score");
 const tryAgainButton = document.getElementById("try-again");
 const shareButton = document.getElementById("share");
 const loadingSpinner = document.getElementById("loading-spinner");
+const signaturePaper = document.getElementById("signature-paper");
+const signatureText = document.getElementById("signature-text");
 
 // Game Variables
 let playerName = "";
@@ -250,47 +252,50 @@ function showLevelUpPopup(message) {
 }
 
 function showAnswerAndGameOver() {
-    // Draw a red circle around the SIGN text with animation
-    let startAngle = 0;
-    const endAngle = 2 * Math.PI;
-    const radius = signWidth / 2 + 10;
-    const centerX = signX;
-    const centerY = signY;
+    // Draw a red circle around the SIGN text
+    ctx.beginPath();
+    ctx.arc(signX, signY, signWidth / 2 + 10, 0, 2 * Math.PI); // Circle around the SIGN
+    ctx.strokeStyle = "red";
+    ctx.lineWidth = 5;
+    ctx.stroke();
 
-    const animateCircle = () => {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(images[currentImageIndex - 1], 0, 0, canvas.width, canvas.height);
+    // Animate the sign text to become fully visible
+    animateSignText();
 
-        // Draw the SIGN text fully visible
+    // Wait for 2 seconds before showing the Game Over popup
+    setTimeout(() => {
+        gameOver();
+    }, 2000);
+}
+
+function animateSignText() {
+    let opacity = getBaseOpacityForLevel();
+    const targetOpacity = 1;
+    const duration = 1000; // 1 second
+    const startTime = performance.now();
+
+    function animate(currentTime) {
+        const elapsedTime = currentTime - startTime;
+        const progress = Math.min(elapsedTime / duration, 1);
+        const currentOpacity = opacity + (targetOpacity - opacity) * progress;
+
+        ctx.clearRect(signX - signWidth / 2, signY - signHeight / 2, signWidth, signHeight);
         ctx.save();
         ctx.translate(signX, signY);
-        ctx.rotate((Math.random() - 0.5) * 0.5); // Random rotation
+        ctx.rotate((Math.random() - 0.5) * 0.5);
         ctx.font = `${signSize}px Arial`;
-        ctx.fillStyle = "rgba(255, 0, 0, 1)"; // Fully visible
+        ctx.fillStyle = `rgba(255, 0, 0, ${currentOpacity})`; // Red color with animated opacity
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.fillText("SIGN", 0, 0);
         ctx.restore();
 
-        // Animate the circle
-        ctx.beginPath();
-        ctx.arc(centerX, centerY, radius, startAngle, startAngle + 0.1);
-        ctx.strokeStyle = "red";
-        ctx.lineWidth = 5;
-        ctx.stroke();
-
-        startAngle += 0.1;
-        if (startAngle < endAngle) {
-            requestAnimationFrame(animateCircle);
-        } else {
-            // Show Game Over popup after animation completes
-            setTimeout(() => {
-                gameOver();
-            }, 1000);
+        if (progress < 1) {
+            requestAnimationFrame(animate);
         }
-    };
+    }
 
-    animateCircle();
+    requestAnimationFrame(animate);
 }
 
 function gameOver() {
@@ -300,27 +305,8 @@ function gameOver() {
     gameOverPopup.style.display = "flex";
     gameOverPopup.classList.add("fade-in");
 
-    // Add a small white paper in the bottom-right corner
-    const paper = document.createElement("div");
-    paper.className = "signature-paper";
-    gameOverPopup.appendChild(paper);
-
-    // Animate the signature "SMITH.SIGN"
-    const signature = document.createElement("div");
-    signature.className = "signature";
-    paper.appendChild(signature);
-
-    const text = "SMITH.SIGN";
-    let index = 0;
-    const writeSignature = () => {
-        if (index < text.length) {
-            signature.textContent += text[index];
-            index++;
-            setTimeout(writeSignature, 200); // Adjust speed of writing
-        }
-    };
-
-    writeSignature();
+    // Animate the signature paper and pen
+    animateSignature();
 
     // Confetti effect
     confetti({
@@ -333,6 +319,22 @@ function gameOver() {
         angle: 120,
         origin: { x: 1 }
     });
+}
+
+function animateSignature() {
+    signaturePaper.style.display = "block";
+    signaturePaper.classList.add("slide-in");
+
+    const text = "SMITH.SIGN";
+    let index = 0;
+    const interval = setInterval(() => {
+        if (index < text.length) {
+            signatureText.textContent += text[index];
+            index++;
+        } else {
+            clearInterval(interval);
+        }
+    }, 200); // Adjust speed of writing
 }
 
 tryAgainButton.addEventListener("click", () => {
