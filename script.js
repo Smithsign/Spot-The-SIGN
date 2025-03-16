@@ -153,7 +153,7 @@ function startTimer() {
             updateTimer();
             if (timeLeft <= 0 && !isGameOver) {
                 clearInterval(timerInterval);
-                gameOver();
+                showAnswerAndGameOver();
             }
         }, 1000);
     }
@@ -246,6 +246,20 @@ function showLevelUpPopup(message) {
     setTimeout(() => {
         levelUpPopup.classList.remove("slide-in");
         levelUpPopup.style.display = "none";
+    }, 2000);
+}
+
+function showAnswerAndGameOver() {
+    // Draw a red circle around the SIGN text
+    ctx.beginPath();
+    ctx.arc(signX, signY, signWidth / 2 + 10, 0, 2 * Math.PI); // Circle around the SIGN
+    ctx.strokeStyle = "red";
+    ctx.lineWidth = 5;
+    ctx.stroke();
+
+    // Wait for 2 seconds before showing the Game Over popup
+    setTimeout(() => {
+        gameOver();
     }, 2000);
 }
 
