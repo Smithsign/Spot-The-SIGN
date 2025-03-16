@@ -172,15 +172,18 @@ function loadNextImage() {
 function renderSign() {
     signX = Math.random() * (canvas.width - 100);
     signY = Math.random() * (canvas.height - 50);
+    signWidth = 100; // Fixed width for easier click detection
+    signHeight = 30; // Fixed height for easier click detection
+
     ctx.save();
     ctx.translate(signX, signY);
     ctx.rotate((Math.random() - 0.5) * 0.5); // Random rotation
-    ctx.font = `${Math.random() * 20 + 20}px Arial`; // Random font size
+    ctx.font = "30px Arial";
     ctx.fillStyle = `rgba(255, 0, 0, ${Math.random() * 0.5 + 0.3})`; // Random opacity
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
     ctx.fillText("SIGN", 0, 0);
     ctx.restore();
-    signWidth = ctx.measureText("SIGN").width;
-    signHeight = 30;
 }
 
 function advanceLevel() {
@@ -257,8 +260,9 @@ canvas.addEventListener("click", (e) => {
     const clickX = e.clientX - rect.left;
     const clickY = e.clientY - rect.top;
 
-    if (clickX > signX && clickX < signX + signWidth && 
-        clickY > signY - signHeight && clickY < signY) {
+    // Check if click is within the sign's bounding box
+    if (clickX >= signX - signWidth / 2 && clickX <= signX + signWidth / 2 &&
+        clickY >= signY - signHeight / 2 && clickY <= signY + signHeight / 2) {
         clickSound.play();
         score += POINTS_PER_LEVEL[level];
         updateScore();
