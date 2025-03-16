@@ -380,3 +380,43 @@ body {
         opacity: 0;
     }
 }
+/* Signature Paper Animation */
+#signature-paper {
+    position: absolute;
+    bottom: -100px;
+    right: -100px;
+    width: 150px;
+    height: 80px;
+    background: white;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    display: none;
+    padding: 10px;
+    font-family: 'Cursive', sans-serif;
+    font-size: 18px;
+    text-align: center;
+    z-index: 1001; /* Ensure it appears above other elements */
+}
+
+#signature-text {
+    display: inline-block;
+    font-family: 'Cursive', sans-serif;
+    font-size: 18px;
+    color: var(--black);
+}
+
+/* Slide-in Animation */
+.slide-in {
+    animation: slideIn 0.5s forwards;
+}
+
+@keyframes slideIn {
+    from {
+        bottom: -100px;
+        right: -100px;
+    }
+    to {
+        bottom: 20px;
+        right: 20px;
+    }
+}
