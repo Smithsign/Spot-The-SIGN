@@ -298,6 +298,29 @@ function animateSignText() {
     requestAnimationFrame(animate);
 }
 
+function animateSignature() {
+    // Show the signature paper
+    signaturePaper.style.display = "block";
+    signaturePaper.classList.add("slide-in");
+
+    // Reset the signature text
+    signatureText.textContent = "";
+
+    // Text to be written
+    const text = "SMITH.SIGN";
+    let index = 0;
+
+    // Simulate writing effect
+    const interval = setInterval(() => {
+        if (index < text.length) {
+            signatureText.textContent += text[index];
+            index++;
+        } else {
+            clearInterval(interval); // Stop the animation
+        }
+    }, 200); // Adjust speed of writing (200ms per character)
+}
+
 function gameOver() {
     isGameOver = true;
     gameOverSound.play();
@@ -320,23 +343,6 @@ function gameOver() {
         origin: { x: 1 }
     });
 }
-
-function animateSignature() {
-    signaturePaper.style.display = "block";
-    signaturePaper.classList.add("slide-in");
-
-    const text = "SMITH.SIGN";
-    let index = 0;
-    const interval = setInterval(() => {
-        if (index < text.length) {
-            signatureText.textContent += text[index];
-            index++;
-        } else {
-            clearInterval(interval);
-        }
-    }, 200); // Adjust speed of writing
-}
-
 tryAgainButton.addEventListener("click", () => {
     gameOverPopup.classList.add("fade-out");
     setTimeout(() => {
