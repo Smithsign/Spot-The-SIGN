@@ -73,7 +73,7 @@ body {
 }
 
 .input-field {
-    width: 100%;
+    width: fit-content;
     padding: 1rem;
     border: 2px solid var(--white); /* White border */
     border-radius: 12px;
