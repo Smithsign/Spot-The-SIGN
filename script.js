@@ -207,9 +207,9 @@ function getBaseOpacityForLevel() {
         case "Easy":
             return 1; // Super duper visible
         case "Medium":
-            return 0.6; // Slightly harder to see
+            return 0.8; // Slightly blended
         case "Hard":
-            return 0.3; // Much harder to see
+            return 0.5; // Mostly blended
         case "Extremely Hard":
             return 0.1; // Almost invisible
         default:
@@ -250,17 +250,47 @@ function showLevelUpPopup(message) {
 }
 
 function showAnswerAndGameOver() {
-    // Draw a red circle around the SIGN text
-    ctx.beginPath();
-    ctx.arc(signX, signY, signWidth / 2 + 10, 0, 2 * Math.PI); // Circle around the SIGN
-    ctx.strokeStyle = "red";
-    ctx.lineWidth = 5;
-    ctx.stroke();
+    // Draw a red circle around the SIGN text with animation
+    let startAngle = 0;
+    const endAngle = 2 * Math.PI;
+    const radius = signWidth / 2 + 10;
+    const centerX = signX;
+    const centerY = signY;
 
-    // Wait for 2 seconds before showing the Game Over popup
-    setTimeout(() => {
-        gameOver();
-    }, 2000);
+    const animateCircle = () => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(images[currentImageIndex - 1], 0, 0, canvas.width, canvas.height);
+
+        // Draw the SIGN text fully visible
+        ctx.save();
+        ctx.translate(signX, signY);
+        ctx.rotate((Math.random() - 0.5) * 0.5); // Random rotation
+        ctx.font = `${signSize}px Arial`;
+        ctx.fillStyle = "rgba(255, 0, 0, 1)"; // Fully visible
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.fillText("SIGN", 0, 0);
+        ctx.restore();
+
+        // Animate the circle
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, startAngle, startAngle + 0.1);
+        ctx.strokeStyle = "red";
+        ctx.lineWidth = 5;
+        ctx.stroke();
+
+        startAngle += 0.1;
+        if (startAngle < endAngle) {
+            requestAnimationFrame(animateCircle);
+        } else {
+            // Show Game Over popup after animation completes
+            setTimeout(() => {
+                gameOver();
+            }, 1000);
+        }
+    };
+
+    animateCircle();
 }
 
 function gameOver() {
