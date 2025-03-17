@@ -249,7 +249,7 @@ function startTimer() {
 
 function loadNextImage() {
     if (currentImageIndex >= images.length) {
-        alert("No more images! You completed the level.");
+        alert("CONGRATULATIONS! You completed the level.");
         resetGame();
         return;
     }
