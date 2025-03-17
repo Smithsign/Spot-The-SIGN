@@ -122,16 +122,34 @@ document.addEventListener("DOMContentLoaded", () => {
         window.open(tweetUrl, "_blank");
     });
 
-    canvas.addEventListener("click", (e) => {
+    // Touch and Click Events for Canvas
+    canvas.addEventListener("click", handleCanvasClick);
+    canvas.addEventListener("touchstart", handleCanvasTouch);
+
+    function handleCanvasClick(e) {
         if (isGameOver) return;
 
         const rect = canvas.getBoundingClientRect();
         const clickX = e.clientX - rect.left;
         const clickY = e.clientY - rect.top;
 
-        // Check if click is within the sign's bounding box
-        if (clickX >= signX - signWidth / 2 && clickX <= signX + signWidth / 2 &&
-            clickY >= signY - signHeight / 2 && clickY <= signY + signHeight / 2) {
+        checkClick(clickX, clickY);
+    }
+
+    function handleCanvasTouch(e) {
+        if (isGameOver) return;
+
+        const rect = canvas.getBoundingClientRect();
+        const touch = e.touches[0];
+        const touchX = touch.clientX - rect.left;
+        const touchY = touch.clientY - rect.top;
+
+        checkClick(touchX, touchY);
+    }
+
+    function checkClick(x, y) {
+        if (x >= signX - signWidth / 2 && x <= signX + signWidth / 2 &&
+            y >= signY - signHeight / 2 && y <= signY + signHeight / 2) {
             clickSound.play();
             score += POINTS_PER_LEVEL[level];
             updateScore();
@@ -153,7 +171,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             loadNextImage();
         }
-    });
+    }
 });
 
 // Game Functions
@@ -171,8 +189,8 @@ function startGame() {
     isGameOver = false;
     showScreen("gameContainer");
     greeting.textContent = `Welcome, ${playerName}! Let's play!`;
-    canvas.width = 800;
-    canvas.height = 600;
+    canvas.width = window.innerWidth * 0.9;
+    canvas.height = window.innerHeight * 0.6;
     score = 0;
     level = "Easy";
     timeLeft = TIMER_PER_LEVEL[level];
