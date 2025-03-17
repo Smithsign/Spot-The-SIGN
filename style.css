@@ -279,7 +279,7 @@ body {
     bottom: 20px; /* Adjusted position */
     right: 20px; /* Adjusted position */
     width: 200px;
-    height: 120px;
+    height: auto;
     background: white;
     background-image: url('/images/paper-texture.jpg'); /* Ensure the path is correct */
     background-size: cover;
