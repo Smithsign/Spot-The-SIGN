@@ -73,13 +73,8 @@ const TIMER_PER_LEVEL = {
 };
 
 // Sound Effects
-const clickSound = new Audio("./sounds/click.wav");
-const gameOverSound = new Audio("./sounds/game-over.wav");
-
-// Background Music
-const backgroundMusic = new Audio("./sounds/background-music.mp3");
-backgroundMusic.loop = true; // Loop the background music
-backgroundMusic.volume = 0.5; // Set initial volume (50%)
+const clickSound = new Audio("./sounds/click.wav"); // Changed from .mp3 to .wav
+const gameOverSound = new Audio("./sounds/game-over.wav"); // Changed from .mp3 to .wav
 
 // Confetti Configuration
 const confettiSettings = { 
@@ -95,9 +90,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Ensure only the welcome screen is visible at the start
     showScreen("welcome");
-
-    // Start background music
-    startBackgroundMusic();
 
     // Button Events
     buttons.signee.addEventListener("click", () => showScreen("signeeOptions"));
@@ -197,7 +189,8 @@ function showScreen(screen) {
 function startGame() {
     isGameOver = false;
     showScreen("gameContainer");
-    greeting.textContent = `Welcome, ${playerName}! Let's play!`;
+    greeting.textContent = `Goodluck, ${playerName}! 
+    🧡👁👅👁🧡`;
 
     // Set canvas dimensions with a fixed aspect ratio (4:3)
     const aspectRatio = 4 / 3;
@@ -220,11 +213,9 @@ function startGame() {
     updateTimer();
     loadNextImage();
     startTimer();
-
-    // Lower background music volume when the game starts
-    lowerBackgroundMusicVolume();
 }
 
+// Rest of the functions remain the same...
 function updateScore() {
     scoreDisplay.textContent = score;
     scoreDisplay.classList.add("pop");
@@ -233,12 +224,7 @@ function updateScore() {
 
 function updateTimer() {
     timerDisplay.textContent = `Time: ${timeLeft}s`;
-
-    // Play clock sound effect when time reaches 6 seconds
-    if (timeLeft === 6) {
-        clockSound.play();
-    }
-
+    
     // Add pulse animation when time is low
     if (timeLeft <= 10 && timeLeft > 0) {
         timerDisplay.classList.add("pulse");
@@ -400,10 +386,12 @@ function animateSignText() {
 
 function animateSignature() {
     // Show the signature paper
+    const signaturePaper = document.getElementById("signature-paper");
     signaturePaper.style.display = "block";
     signaturePaper.classList.add("slide-in");
 
     // Reset the signature text
+    const signatureText = document.getElementById("signature-text");
     signatureText.textContent = "";
 
     // Text to be written
@@ -431,19 +419,27 @@ function gameOver() {
     // Animate the signature paper and pen
     animateSignature();
 
-    // Restore background music volume
-    restoreBackgroundMusicVolume();
-
     // Confetti effect
     confetti({
-        ...confettiSettings,
-        angle: 60,
-        origin: { x: 0 }
+        particleCount: 100, // Number of confetti particles
+        spread: 70, // Spread of the confetti
+        origin: { y: 0.6 }, // Origin of the confetti (bottom of the screen)
+        colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff'] // Confetti colors
     });
+
+    // Additional confetti effects for more coverage
     confetti({
-        ...confettiSettings,
-        angle: 120,
-        origin: { x: 1 }
+        particleCount: 100,
+        spread: 70,
+        angle: 60, // Angle of the confetti
+        origin: { x: 0 } // Left side of the screen
+    });
+
+    confetti({
+        particleCount: 100,
+        spread: 70,
+        angle: 120, // Angle of the confetti
+        origin: { x: 1 } // Right side of the screen
     });
 }
 
@@ -451,17 +447,4 @@ function resetGame() {
     clearInterval(timerInterval);
     showScreen("welcome");
     canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
-}
-
-// Background Music Functions
-function startBackgroundMusic() {
-    backgroundMusic.play();
-}
-
-function lowerBackgroundMusicVolume() {
-    backgroundMusic.volume = 0.2; // Lower volume to 20%
-}
-
-function restoreBackgroundMusicVolume() {
-    backgroundMusic.volume = 0.5; // Restore volume to 50%
 }
