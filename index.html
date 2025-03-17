@@ -1,113 +1,342 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-eval';">
-    <title>SPOT THE SIGN 👀</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600&family=Fredoka+One&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/confetti-js@0.0.18/dist/index.min.js"></script>
-    <canvas id="confetti-canvas" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;"></canvas>
-</head>
-<body>
-    <!-- Welcome Screen -->
-    <section id="welcome-screen" class="screen">
-        <h1 class="game-title">Welcome to SPOT THE SIGN! 👀</h1>
-        <div class="button-container">
-            <button class="button" id="btn-signee">
-                <span class="button-icon">🍊</span>
-                Are you a signee?
-            </button>
-        </div>
-    </section>
+:root {
+    --primary-orange: #ff6b35;
+    --secondary-orange: #ff8c42;
+    --dark-orange: #cc5500;
+    --white: #ffffff;
+    --black: #2b2b2b;
+}
 
-    <!-- SIGNEE Flow Options -->
-    <section id="signee-options" class="screen" style="display: none;">
-        <h2 class="game-subtitle">Do you know SIGN? 🤔</h2>
-        <div class="button-container">
-            <button class="button choice-button" id="btn-yes">
-                <span class="button-icon">✅</span>
-                Yes, I'm Ready!
-            </button>
-            <button class="button choice-button" id="btn-no">
-                <span class="button-icon">❌</span>
-                No, Show Me
-            </button>
-        </div>
-    </section>
+/* General Styling */
+body {
+    font-family: 'Rubik', sans-serif;
+    margin: 0;
+    padding: 0;
+    background: linear-gradient(135deg, var(--primary-orange), var(--secondary-orange));
+    min-height: 100vh;
+    color: var(--white);
+    text-align: center;
+    overflow: hidden;
+}
 
- <!-- Name Form -->
- <section id="name-form-screen" class="screen" style="display: none;">
-    <div class="form-card">
-        <h2 class="game-subtitle">Enter Your Name 🧑✏️</h2>
-        <form id="name-form" class="form-container">
-            <div class="input-group">
-                <label for="signee-name" class="input-label">Singee name:</label>
-                <input type="text" id="signee-name" class="input-field" placeholder="Type your name here..." required>
-            </div>
-            <button type="submit" class="button submit-button">
-                <span class="button-icon">🚀</span>
-                Start Game!
-            </button>
-        </form>
-    </div>
-</section>
-    <!-- Introduction to SIGN -->
-    <section id="introduce-sign" class="screen" style="display: none;">
-        <h2 class="game-subtitle">Click The Link To See SIGN!</h2>
-        <img src="./images/orangeprint.jpg" alt="Orangprint Image" class="sign-image">
-        <a href="https://x.com/sign/status/1889291715145568720" target="_blank" class="external-link">
-            View SIGN on X (Twitter)
-        </a>
-        <p class="info">🧡👁👅👁🧡</p>
-        <button class="button" id="btn-intro-name">Continue to the game</button>
-    </section>
+/* Screen Styling */
+.screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 1rem;
+}
 
-    <!-- Game Container -->
-    <section id="game-container" class="screen" style="display: none;">
-        <h2 id="greeting" class="game-subtitle"></h2>
-        <canvas id="game-canvas" class="game-canvas"></canvas>
-        <div id="score-box">
-            <span class="emoji">👀</span>
-            <span class="score-label">Score:</span>
-            <span id="score" class="score">0</span>
-        </div>
-        <div id="timer">Time: 20s</div>
-    </section>
+/* Button Styling */
+.button {
+    background: var(--white);
+    color: var(--primary-orange);
+    border: 2px solid var(--white);
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    cursor: pointer;
+    border-radius: 50px;
+    transition: all 0.3s ease;
+    margin: 0.5rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
 
-    <!-- Level-Up Popup -->
-    <div id="level-up-popup" style="display: none;"></div>
+.button:hover {
+    background: rgba(255, 255, 255, 0.9);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
 
-    <!-- Game Over Popup -->
-    <div id="game-over-popup" class="popup" style="display: none;">
-        <div class="popup-content">
-            <h2 class="popup-title">Game Over!</h2>
-            <p class="popup-text">Your final score:</p>
-            <div class="final-score" id="final-score">0</div>
-            <div class="popup-buttons">
-                <button id="try-again" class="button popup-button">Try Again
-                    <span class="button-icon">🔄</span>
-                </button>
-                <button id="share" class="button popup-button">Share on X
-                    <span class="button-icon">🐦</span>
-                </button>
-            </div>
-            <!-- Signature Paper and Text -->
-            <div id="signature-paper">
-                <span id="signature-text"></span>
-            </div>
-        </div>
-    </div>
+/* Form Styling */
+.form-card {
+    background: var(--primary-orange);
+    padding: 2rem;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    width: 90%;
+    max-width: 400px;
+    margin: 1rem auto;
+    border: 2px solid var(--white);
+}
 
-    <!-- Loading Spinner -->
-    <div id="loading-spinner" class="loading-spinner" style="display: none;">
-        <div class="spinner"></div>
-    </div>
+.input-group {
+    margin-bottom: 1.5rem;
+}
 
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
-    <script src="script.js"></script>
-</body>
-</html>
+.input-label {
+    display: block;
+    color: var(--white);
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.input-field {
+    width: auto;
+    padding: 1rem;
+    border: 2px solid var(--white);
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+    background: rgba(255, 255, 255, 0.9);
+    color: var(--black);
+}
+
+.input-field:focus {
+    outline: none;
+    border-color: var(--dark-orange);
+    box-shadow: 0 0 8px rgba(255, 107, 53, 0.3);
+}
+
+/* Game Canvas */
+.game-canvas {
+    width: 90%;
+    max-width: 800px;
+    height: auto;
+    aspect-ratio: 4/3;
+    border-radius: 20px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    background: var(--white);
+}
+
+/* Score Display */
+#score-box {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.7);
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-size: 1.2rem;
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    backdrop-filter: blur(5px);
+}
+
+/* Timer Display */
+#timer {
+    position: fixed;
+    top: 1.5rem;
+    right: 1.5rem;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 0.8rem 1.5rem;
+    border-radius: 30px;
+    font-size: 1.2rem;
+    font-weight: 600;
+    backdrop-filter: blur(5px);
+}
+
+/* Level-Up Popup */
+#level-up-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.9);
+    color: var(--white);
+    padding: 1.5rem 2.5rem;
+    border-radius: 20px;
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-align: center;
+    z-index: 1000;
+    display: none;
+    backdrop-filter: blur(5px);
+}
+
+/* Game Over Popup */
+.popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 107, 53, 0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.popup-content {
+    background: var(--primary-orange);
+    padding: 2rem;
+    border-radius: 10px;
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    color: var(--white);
+}
+
+.popup-title {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.popup-text {
+    font-size: 1.2rem;
+    margin-bottom: 1rem;
+}
+
+.final-score {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: var(--white);
+    margin-bottom: 1.5rem;
+}
+
+.popup-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.popup-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1001;
+}
+
+.spinner {
+    border: 8px solid rgba(255, 107, 53, 0.3);
+    border-top: 8px solid var(--primary-orange);
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Animations */
+.fade-in {
+    animation: fadeIn 0.3s ease-in;
+}
+
+.fade-out {
+    animation: fadeOut 0.3s ease-out;
+}
+
+.slide-in {
+    animation: slideIn 0.5s ease-out;
+}
+
+.pop {
+    animation: pop 0.2s ease-in-out;
+}
+
+.pulse {
+    animation: pulse 1s infinite;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+@keyframes slideIn {
+    from { transform: translateY(-100px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes pop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+#signature-paper {
+    position: fixed; /* Changed from absolute to fixed */
+    bottom: 20px; /* Adjusted position */
+    right: 20px; /* Adjusted position */
+    width: 200px;
+    height: 120px;
+    background: white;
+    background-image: url('/images/paper-texture.jpg'); /* Ensure the path is correct */
+    background-size: cover;
+    border: 1px solid #ccc;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    display: none; /* Initially hidden */
+    padding: 20px;
+    font-family: 'Dancing Script', cursive;
+    font-size: 24px;
+    text-align: center;
+    z-index: 1001;
+    overflow: hidden;
+    border-radius: 10px; /* Optional: Add rounded corners */
+}
+
+#signature-text {
+    display: inline-block;
+    color: var(--black); /* Ensure the color is visible */
+    position: relative;
+    font-size: 24px; /* Adjust font size if needed */
+    font-weight: bold; /* Optional: Make the text bold */
+}
+
+/* Mobile Optimization */
+@media (max-width: 768px) {
+    .game-title {
+        font-size: 2.5rem;
+    }
+
+    .button {
+        padding: 1.2rem 2.5rem;
+        font-size: 1.2rem;
+    }
+
+    .form-card {
+        padding: 1.5rem;
+    }
+
+    #score-box {
+        font-size: 1.5rem;
+        padding: 1rem 2rem;
+    }
+
+    #timer {
+        font-size: 1.5rem;
+        padding: 1rem 2rem;
+    }
+
+    #level-up-popup {
+        font-size: 1.2rem;
+        padding: 1rem 2rem;
+    }
+}
+/* Introduction to SIGN Image */
+.sign-image {
+    width: 300px; /* Adjust the width as needed */
+    height: auto; /* Maintain aspect ratio */
+    border-radius: 15px; /* Optional: Add rounded corners */
+    margin: 1rem 0; /* Add some spacing around the image */
+}
