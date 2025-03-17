@@ -1,4 +1,3 @@
-// DOM Elements
 const screens = {
     welcome: document.getElementById("welcome-screen"),
     nameForm: document.getElementById("name-form-screen"),
@@ -30,7 +29,7 @@ const loadingSpinner = document.getElementById("loading-spinner");
 const signaturePaper = document.getElementById("signature-paper");
 const signatureText = document.getElementById("signature-text");
 
-// Game Variables
+
 let playerName = "";
 let score = 0;
 let level = "Easy";
@@ -43,7 +42,7 @@ let isGameOver = false;
 let signSize = 30; // Initial font size for the sign text
 let duplicateCount = 0; // Counter for duplicate images in Extremely Hard level
 
-// Image Paths
+
 const imagePaths = {
     Easy: ["./images/easy1.jpg", "./images/easy2.jpg", "./images/easy3.jpg", "./images/easy4.jpg", "./images/easy5.jpg"],
     Medium: ["./images/medium1.jpg", "./images/medium2.jpg", "./images/medium3.jpg", "./images/medium4.jpg", "./images/medium5.jpg", "./images/medium6.jpg"],
@@ -56,7 +55,7 @@ const imagePaths = {
     "Extremely Hard": ["./images/extremely-hard.jpg"],
 };
 
-// Points Configuration
+
 const POINTS_PER_LEVEL = {
     Easy: 1,
     Medium: 5,
@@ -64,7 +63,7 @@ const POINTS_PER_LEVEL = {
     "Extremely Hard": 20,
 };
 
-// Timer Configuration
+
 const TIMER_PER_LEVEL = {
     Easy: 0,
     Medium: 20,
@@ -72,11 +71,11 @@ const TIMER_PER_LEVEL = {
     "Extremely Hard": 10,
 };
 
-// Sound Effects
+
 const clickSound = new Audio("./sounds/click.wav"); // Changed from .mp3 to .wav
 const gameOverSound = new Audio("./sounds/game-over.wav"); // Changed from .mp3 to .wav
 
-// Confetti Configuration
+
 const confettiSettings = { 
     particleCount: 100, 
     spread: 70, 
@@ -84,14 +83,14 @@ const confettiSettings = {
     colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff']
 };
 
-// Initialize the game
+
 document.addEventListener("DOMContentLoaded", () => {
     console.log("Game initialized. Check for errors in the console.");
 
-    // Ensure only the welcome screen is visible at the start
+  
     showScreen("welcome");
 
-    // Button Events
+
     buttons.signee.addEventListener("click", () => showScreen("signeeOptions"));
     buttons.yes.addEventListener("click", () => showScreen("nameForm"));
     buttons.no.addEventListener("click", () => showScreen("introduceSign"));
@@ -122,7 +121,7 @@ document.addEventListener("DOMContentLoaded", () => {
         window.open(tweetUrl, "_blank");
     });
 
-    // Handle both click and touch events
+  
     canvas.addEventListener("click", handleCanvasClick);
     canvas.addEventListener("touchstart", handleCanvasTouch, { passive: false });
 
@@ -139,7 +138,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function handleCanvasTouch(e) {
         if (isGameOver) return;
 
-        e.preventDefault(); // Prevent default touch behavior (e.g., scrolling)
+        e.preventDefault();
         const rect = canvas.getBoundingClientRect();
         const touch = e.touches[0];
         const touchX = touch.clientX - rect.left;
@@ -156,11 +155,11 @@ document.addEventListener("DOMContentLoaded", () => {
             updateScore();
 
             if (level === "Extremely Hard") {
-                // Duplicate the image and decrease sign size
+              
                 duplicateCount++;
-                signSize = Math.max(10, signSize - 5); // Decrease size by 5px each time
+                signSize = Math.max(10, signSize - 5); 
                 if (duplicateCount % 2 === 0) {
-                    loadNextImage(); // Load a new image every 2 clicks
+                    loadNextImage(); 
                 }
             } else if (level !== "Extremely Hard" && currentImageIndex >= images.length) {
                 advanceLevel();
@@ -175,7 +174,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
-// Game Functions
+
 function showScreen(screen) {
     if (screens[screen]) {
         Object.values(screens).forEach((s) => (s.style.display = "none"));
@@ -192,7 +191,7 @@ function startGame() {
     greeting.textContent = `Goodluck, ${playerName}! 
     🧡👁👅👁🧡`;
 
-    // Set canvas dimensions with a fixed aspect ratio (4:3)
+    
     const aspectRatio = 4 / 3;
     const maxWidth = window.innerWidth * 0.9;
     const maxHeight = window.innerHeight * 0.6;
@@ -215,7 +214,7 @@ function startGame() {
     startTimer();
 }
 
-// Rest of the functions remain the same...
+
 function updateScore() {
     scoreDisplay.textContent = score;
     scoreDisplay.classList.add("pop");
@@ -225,7 +224,7 @@ function updateScore() {
 function updateTimer() {
     timerDisplay.textContent = `Time: ${timeLeft}s`;
     
-    // Add pulse animation when time is low
+  
     if (timeLeft <= 10 && timeLeft > 0) {
         timerDisplay.classList.add("pulse");
     } else {
@@ -283,9 +282,9 @@ function renderSign() {
 
 function getSignColor() {
     const imageData = ctx.getImageData(signX, signY, 1, 1).data;
-    const baseOpacity = getBaseOpacityForLevel(); // Get opacity based on level
+    const baseOpacity = getBaseOpacityForLevel();
     if (level === "Easy") {
-        return "rgba(255, 0, 0, 1)"; // Super duper visible (bright red)
+        return "rgba(255, 0, 0, 1)"; 
     }
     return `rgba(${imageData[0]}, ${imageData[1]}, ${imageData[2]}, ${baseOpacity})`;
 }
@@ -338,17 +337,17 @@ function showLevelUpPopup(message) {
 }
 
 function showAnswerAndGameOver() {
-    // Draw a red circle around the SIGN text
+   
     ctx.beginPath();
-    ctx.arc(signX, signY, signWidth / 2 + 10, 0, 2 * Math.PI); // Circle around the SIGN
+    ctx.arc(signX, signY, signWidth / 2 + 10, 0, 2 * Math.PI); 
     ctx.strokeStyle = "red";
     ctx.lineWidth = 5;
     ctx.stroke();
 
-    // Animate the sign text to become fully visible
+    
     animateSignText();
 
-    // Wait for 2 seconds before showing the Game Over popup
+    
     setTimeout(() => {
         gameOver();
     }, 2000);
@@ -357,7 +356,7 @@ function showAnswerAndGameOver() {
 function animateSignText() {
     let opacity = getBaseOpacityForLevel();
     const targetOpacity = 1;
-    const duration = 1000; // 1 second
+    const duration = 1000; 
     const startTime = performance.now();
 
     function animate(currentTime) {
@@ -370,7 +369,7 @@ function animateSignText() {
         ctx.translate(signX, signY);
         ctx.rotate((Math.random() - 0.5) * 0.5);
         ctx.font = `${signSize}px Arial`;
-        ctx.fillStyle = `rgba(255, 0, 0, ${currentOpacity})`; // Red color with animated opacity
+        ctx.fillStyle = `rgba(255, 0, 0, ${currentOpacity})`; 
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.fillText("SIGN", 0, 0);
@@ -385,28 +384,28 @@ function animateSignText() {
 }
 
 function animateSignature() {
-    // Show the signature paper
+   
     const signaturePaper = document.getElementById("signature-paper");
     signaturePaper.style.display = "block";
     signaturePaper.classList.add("slide-in");
 
-    // Reset the signature text
+    
     const signatureText = document.getElementById("signature-text");
     signatureText.textContent = "";
 
-    // Text to be written
+  
     const text = "~xoxo, sign smith";
     let index = 0;
 
-    // Simulate writing effect
+    
     const interval = setInterval(() => {
         if (index < text.length) {
             signatureText.textContent += text[index];
             index++;
         } else {
-            clearInterval(interval); // Stop the animation
+            clearInterval(interval); 
         }
-    }, 200); // Adjust speed of writing (200ms per character)
+    }, 200); 
 }
 
 function gameOver() {
@@ -416,30 +415,30 @@ function gameOver() {
     gameOverPopup.style.display = "flex";
     gameOverPopup.classList.add("fade-in");
 
-    // Animate the signature paper and pen
+   
     animateSignature();
 
-    // Confetti effect
+ 
     confetti({
-        particleCount: 100, // Number of confetti particles
-        spread: 70, // Spread of the confetti
-        origin: { y: 0.6 }, // Origin of the confetti (bottom of the screen)
-        colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff'] // Confetti colors
+        particleCount: 100, 
+        spread: 70, 
+        origin: { y: 0.6 }, 
+        colors: ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff'] 
     });
 
-    // Additional confetti effects for more coverage
+  
     confetti({
         particleCount: 100,
         spread: 70,
-        angle: 60, // Angle of the confetti
-        origin: { x: 0 } // Left side of the screen
+        angle: 60, 
+        origin: { x: 0 } 
     });
 
     confetti({
         particleCount: 100,
         spread: 70,
-        angle: 120, // Angle of the confetti
-        origin: { x: 1 } // Right side of the screen
+        angle: 120, 
+        origin: { x: 1 } 
     });
 }
 
