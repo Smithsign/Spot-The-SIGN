@@ -122,9 +122,9 @@ document.addEventListener("DOMContentLoaded", () => {
         window.open(tweetUrl, "_blank");
     });
 
-    // Touch and Click Events for Canvas
+    // Handle both click and touch events
     canvas.addEventListener("click", handleCanvasClick);
-    canvas.addEventListener("touchstart", handleCanvasTouch);
+    canvas.addEventListener("touchstart", handleCanvasTouch, { passive: false });
 
     function handleCanvasClick(e) {
         if (isGameOver) return;
@@ -139,6 +139,7 @@ document.addEventListener("DOMContentLoaded", () => {
     function handleCanvasTouch(e) {
         if (isGameOver) return;
 
+        e.preventDefault(); // Prevent default touch behavior (e.g., scrolling)
         const rect = canvas.getBoundingClientRect();
         const touch = e.touches[0];
         const touchX = touch.clientX - rect.left;
@@ -189,8 +190,17 @@ function startGame() {
     isGameOver = false;
     showScreen("gameContainer");
     greeting.textContent = `Welcome, ${playerName}! Let's play!`;
-    canvas.width = window.innerWidth * 0.9;
-    canvas.height = window.innerHeight * 0.6;
+
+    // Set canvas dimensions with a fixed aspect ratio (4:3)
+    const aspectRatio = 4 / 3;
+    const maxWidth = window.innerWidth * 0.9;
+    const maxHeight = window.innerHeight * 0.6;
+    const canvasWidth = Math.min(maxWidth, maxHeight * aspectRatio);
+    const canvasHeight = canvasWidth / aspectRatio;
+
+    canvas.width = canvasWidth;
+    canvas.height = canvasHeight;
+
     score = 0;
     level = "Easy";
     timeLeft = TIMER_PER_LEVEL[level];
@@ -204,6 +214,7 @@ function startGame() {
     startTimer();
 }
 
+// Rest of the functions remain the same...
 function updateScore() {
     scoreDisplay.textContent = score;
     scoreDisplay.classList.add("pop");
