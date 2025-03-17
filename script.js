@@ -73,8 +73,13 @@ const TIMER_PER_LEVEL = {
 };
 
 // Sound Effects
-const clickSound = new Audio("./sounds/click.mp3");
-const gameOverSound = new Audio("./sounds/game-over.mp3");
+const clickSound = new Audio("./sounds/click.wav");
+const gameOverSound = new Audio("./sounds/game-over.wav");
+
+// Background Music
+const backgroundMusic = new Audio("./sounds/background-music.mp3");
+backgroundMusic.loop = true; // Loop the background music
+backgroundMusic.volume = 0.5; // Set initial volume (50%)
 
 // Confetti Configuration
 const confettiSettings = { 
@@ -91,8 +96,11 @@ document.addEventListener("DOMContentLoaded", () => {
     // Ensure only the welcome screen is visible at the start
     showScreen("welcome");
 
+    // Start background music
+    startBackgroundMusic();
+
     // Button Events
-    buttons.signee.addEventListener("click", () => showScreen("nameForm"));
+    buttons.signee.addEventListener("click", () => showScreen("signeeOptions"));
     buttons.yes.addEventListener("click", () => showScreen("nameForm"));
     buttons.no.addEventListener("click", () => showScreen("introduceSign"));
     buttons.introName.addEventListener("click", () => showScreen("nameForm"));
@@ -212,9 +220,11 @@ function startGame() {
     updateTimer();
     loadNextImage();
     startTimer();
+
+    // Lower background music volume when the game starts
+    lowerBackgroundMusicVolume();
 }
 
-// Rest of the functions remain the same...
 function updateScore() {
     scoreDisplay.textContent = score;
     scoreDisplay.classList.add("pop");
@@ -223,7 +233,12 @@ function updateScore() {
 
 function updateTimer() {
     timerDisplay.textContent = `Time: ${timeLeft}s`;
-    
+
+    // Play clock sound effect when time reaches 6 seconds
+    if (timeLeft === 6) {
+        clockSound.play();
+    }
+
     // Add pulse animation when time is low
     if (timeLeft <= 10 && timeLeft > 0) {
         timerDisplay.classList.add("pulse");
@@ -416,6 +431,9 @@ function gameOver() {
     // Animate the signature paper and pen
     animateSignature();
 
+    // Restore background music volume
+    restoreBackgroundMusicVolume();
+
     // Confetti effect
     confetti({
         ...confettiSettings,
@@ -433,4 +451,17 @@ function resetGame() {
     clearInterval(timerInterval);
     showScreen("welcome");
     canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+}
+
+// Background Music Functions
+function startBackgroundMusic() {
+    backgroundMusic.play();
+}
+
+function lowerBackgroundMusicVolume() {
+    backgroundMusic.volume = 0.2; // Lower volume to 20%
+}
+
+function restoreBackgroundMusicVolume() {
+    backgroundMusic.volume = 0.5; // Restore volume to 50%
 }
