@@ -8,6 +8,9 @@
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600&family=Fredoka+One&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.5.1/dist/confetti.browser.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/confetti-js@0.0.18/dist/index.min.js"></script>
+    <canvas id="confetti-canvas" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;"></canvas>
 </head>
 <body>
     <!-- Welcome Screen -->
@@ -15,26 +18,9 @@
         <h1 class="game-title">Welcome to SPOT THE SIGN! 👀</h1>
         <div class="button-container">
             <button class="button" id="btn-signee">
-                <span class="button-icon">🖐️</span>
+                <span class="button-icon">🍊</span>
                 Are you a signee?
             </button>
-        </div>
-    </section>
-
-    <!-- Name Form -->
-    <section id="name-form-screen" class="screen" style="display: none;">
-        <div class="form-card">
-            <h2 class="game-subtitle">Enter Your Name 🧑✏️</h2>
-            <form id="name-form" class="form-container">
-                <div class="input-group">
-                    <label for="signee-name" class="input-label">Your Name:</label>
-                    <input type="text" id="signee-name" class="input-field" placeholder="Type your name here..." required>
-                </div>
-                <button type="submit" class="button submit-button">
-                    <span class="button-icon">🚀</span>
-                    Start Game!
-                </button>
-            </form>
         </div>
     </section>
 
@@ -53,14 +39,30 @@
         </div>
     </section>
 
+ <!-- Name Form -->
+ <section id="name-form-screen" class="screen" style="display: none;">
+    <div class="form-card">
+        <h2 class="game-subtitle">Enter Your Name 🧑✏️</h2>
+        <form id="name-form" class="form-container">
+            <div class="input-group">
+                <label for="signee-name" class="input-label">Singee name:</label>
+                <input type="text" id="signee-name" class="input-field" placeholder="Type your name here..." required>
+            </div>
+            <button type="submit" class="button submit-button">
+                <span class="button-icon">🚀</span>
+                Start Game!
+            </button>
+        </form>
+    </div>
+</section>
     <!-- Introduction to SIGN -->
     <section id="introduce-sign" class="screen" style="display: none;">
-        <h2 class="game-subtitle">Let me introduce SIGN to you!</h2>
+        <h2 class="game-subtitle">Click The Link To See SIGN!</h2>
         <img src="./images/orangeprint.jpg" alt="Orangprint Image" class="sign-image">
         <a href="https://x.com/sign/status/1889291715145568720" target="_blank" class="external-link">
             View SIGN on X (Twitter)
         </a>
-        <p class="info">Click the link!!!</p>
+        <p class="info">🧡👁👅👁🧡</p>
         <button class="button" id="btn-intro-name">Continue to the game</button>
     </section>
 
