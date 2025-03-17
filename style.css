@@ -73,7 +73,7 @@ body {
 }
 
 .input-field {
-    width: 100%;
+    width: auto;
     padding: 1rem;
     border: 2px solid var(--white);
     border-radius: 12px;
@@ -274,31 +274,33 @@ body {
     100% { transform: scale(1); }
 }
 
-/* Signature Paper Animation */
 #signature-paper {
-    position: absolute;
-    bottom: -100px;
-    right: -100px;
+    position: fixed; /* Changed from absolute to fixed */
+    bottom: 20px; /* Adjusted position */
+    right: 20px; /* Adjusted position */
     width: 200px;
     height: 120px;
     background: white;
-    background-image: url('paper-texture.jpg');
+    background-image: url('/images/paper-texture.jpg'); /* Ensure the path is correct */
     background-size: cover;
     border: 1px solid #ccc;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    display: none;
+    display: none; /* Initially hidden */
     padding: 20px;
     font-family: 'Dancing Script', cursive;
     font-size: 24px;
     text-align: center;
     z-index: 1001;
     overflow: hidden;
+    border-radius: 10px; /* Optional: Add rounded corners */
 }
 
 #signature-text {
     display: inline-block;
-    color: var(--black);
+    color: var(--black); /* Ensure the color is visible */
     position: relative;
+    font-size: 24px; /* Adjust font size if needed */
+    font-weight: bold; /* Optional: Make the text bold */
 }
 
 /* Mobile Optimization */
@@ -330,9 +332,11 @@ body {
         font-size: 1.2rem;
         padding: 1rem 2rem;
     }
-
-    .game-canvas {
-        width: 100%;
-        height: auto;
-    }
+}
+/* Introduction to SIGN Image */
+.sign-image {
+    width: 300px; /* Adjust the width as needed */
+    height: auto; /* Maintain aspect ratio */
+    border-radius: 15px; /* Optional: Add rounded corners */
+    margin: 1rem 0; /* Add some spacing around the image */
 }
