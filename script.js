@@ -395,7 +395,7 @@ function animateSignature() {
     signatureText.textContent = "";
 
     // Text to be written
-    const text = "SMITH.SIGN";
+    const text = "~xoxo, sign smith";
     let index = 0;
 
     // Simulate writing effect
